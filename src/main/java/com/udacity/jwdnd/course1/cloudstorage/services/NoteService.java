@@ -19,12 +19,12 @@ public class NoteService {
     }
 
     public Integer insertNote(Note note){
-        logger.info("NoteService: insert note in database");
+        logger.info("NoteService: insert note in db");
         return noteMapper.insertNote(note);
     }
 
     public List<Note> getNotesForUser(Integer userId){
-        logger.info("NoteService: get all notes for the user");
+        logger.info("NoteService: get all notes for the specified user");
         return noteMapper.getNotesForUser(userId);
     }
 

@@ -39,7 +39,6 @@ public class UserService {
         random.nextBytes(salt);
         String encodedSalt = Base64.getEncoder().encodeToString(salt);
         String hashedPassword = hashService.getHashedValue(user.getPassWord(), encodedSalt);
-
         user.setSalt(encodedSalt);
         user.setPassWord(hashedPassword);
 

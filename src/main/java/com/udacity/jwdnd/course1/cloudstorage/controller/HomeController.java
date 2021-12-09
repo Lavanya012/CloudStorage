@@ -41,7 +41,7 @@ public class HomeController {
     public String getHome(Model model, Authentication authentication){
         Integer currentUserId = userService.getUser(authentication.getName()).getUserId();
 
-        logger.error("at HOME");
+
         //Credentials
         List<Credentials> credentialsList=credentialService.getCredentialsForUser(currentUserId);
 
@@ -60,7 +60,7 @@ public class HomeController {
         model.addAttribute("credentials",credentialsList);
 
         //Notes
-        logger.error("Home:ready to add note attributes");
+
         List<Note> notesList= noteService.getNotesForUser(currentUserId);
         Iterator<Note> iterator1=notesList.iterator();
         while(iterator1.hasNext()){

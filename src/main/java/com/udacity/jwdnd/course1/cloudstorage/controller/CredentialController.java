@@ -14,7 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import static com.udacity.jwdnd.course1.cloudstorage.constant.ConstantMsgs.*;
+
 
 @Controller
 public class CredentialController {
@@ -32,75 +32,81 @@ public class CredentialController {
     }
 
     @PostMapping("home/credentials")
-    public String createCredential(@ModelAttribute Credentials credential, RedirectAttributes redirectAttributes){
-        logger.error("---Begining Credential Controller----");
-        String credential_err=null;
-        String credential_ok=null;
-        String userName=authenticationService.getUserName();
-        Integer credId=credential.getCredentialId();
+    public String createCredential(@ModelAttribute Credentials credential, RedirectAttributes redirectAttributes) {
+        String credential_err = null;
+        String credential_ok = null;
+        String userName = authenticationService.getUserName();
+        Integer credId = credential.getCredentialId();
 
-        if(userName==null)
-            credential_err = CREDENTIAL_INVALIDSESSION_ERR;
+        if (userName == null)
+            credential_err = "Invalid session";
 
-        int userId=-1;
-        if(credential_err==null) {
+        int userId = -1;
+        if (credential_err == null) {
             User user = userService.getUser(userName);
-            if(user!=null)
-               credential.setUserId(user.getUserId());
+            if (user != null)
+                credential.setUserId(user.getUserId());
             else
-                credential_err = CREDENTIAL_INVALIDSESSION_ERR;
+                credential_err = "Invalid Session";
         }
 
-        if(credential_err==null){//create new credential
-            if(credId==null) {
-                logger.error("Now ready to insert the credential  " + credential.getUrl() + "  " + credential.getUrlUserName() + " " + credential.getUrlPassWord());
+        if (credential_err == null) {//create new credential
+            if (credId == null) {
                 credentialService.encryptPassword(credential);
                 int rowAdded = credentialService.createCredential(credential);
                 if (rowAdded < 0) {
-                    logger.error("CredentialController: insert failed");
-                    credential_err = CREDENTIAL_CREATE_ERR;
-                }else{
-                    credId= credentialService.getLastCredentialId();//newly inserted is always the last one
-                    credential_ok=CREDENTIAL_CREATE_SUCCESS;
+                    credential_err = "Error while creating credentials";
+                } else {
+                    credId = credentialService.getLastCredentialId();//newly inserted is always the last one
+                    credential_ok = "credentials creation success";
                 }
-            }
-            else {
+            } else {
 
                 credentialService.updateCredentialWithKey(credential);
                 credentialService.encryptPassword(credential);
 
                 int rowUpdated = credentialService.updateCredential(credential);
-                if(rowUpdated<0)
-                    credential_err = CREDENTIAL_UPDATE_ERR;
+                if (rowUpdated < 0)
+                    credential_err = "Error while updating credentials";
                 else
-                    credential_ok=CREDENTIAL_UPDATE_SUCCESS;
+                    credential_ok = "credentials update success";
             }
         }
 
 
-        if(credential_err==null) {redirectAttributes.addAttribute("opCredOk",true); redirectAttributes.addAttribute("opCredMsg",credential_ok+" -ID:"+credId.toString());}
-        else {redirectAttributes.addAttribute("opCredNotOk",true);redirectAttributes.addAttribute("opCredMsg",credential_err+" -ID:"+credId.toString());}
+        if (credential_err == null) {
+            redirectAttributes.addAttribute("opCredOk", true);
+            redirectAttributes.addAttribute("opCredMsg", credential_ok + " -ID:" + credId.toString());
+        } else {
+            redirectAttributes.addAttribute("opCredNotOk", true);
+            redirectAttributes.addAttribute("opCredMsg", credential_err + " -ID:" + credId.toString());
+        }
 
-        return("redirect:/home");
+        return ("redirect:/home");
     }
 
 
     @GetMapping("/home/credentials/delete/{credentialId}")
     public String deleteCredential(@PathVariable("credentialId") Integer credentialId,
-                                   RedirectAttributes redirectAttributes){
+                                   RedirectAttributes redirectAttributes) {
 
-        String credential_err=null;
-        String credential_ok=null;
+        String credential_err = null;
+        String credential_ok = null;
 
-        int rowDeleted=credentialService.deleteCredential(credentialId);
-        if(rowDeleted<0)
-            credential_err=CREDENTIAL_DELETE_ERR;
+        int rowDeleted = credentialService.deleteCredential(credentialId);
+        if (rowDeleted < 0)
+            credential_err = "Credential deletion failed";
         else
-            credential_ok=CREDENTIAL_DELETE_SUCCESS;
+            credential_ok = "Deleting credential is successful";
 
-        if(credential_err==null) {redirectAttributes.addAttribute("opCredOk",true); redirectAttributes.addAttribute("opCredMsg",credential_ok+" -ID:"+credentialId.toString());}
-        else {redirectAttributes.addAttribute("opCredNotOk",true);redirectAttributes.addAttribute("opCredMsg",credential_err+" -ID:"+credentialId.toString());}
+        if (credential_err == null) {
+            redirectAttributes.addAttribute("opCredOk", true);
+            redirectAttributes.addAttribute("opCredMsg", credential_ok + " -ID:" + credentialId.toString());
+        } else {
+            redirectAttributes.addAttribute("opCredNotOk", true);
+            redirectAttributes.addAttribute("opCredMsg", credential_err + " -ID:" + credentialId.toString());
+        }
 
-        return("redirect:/home");
+        return ("redirect:/home");
     }
 }

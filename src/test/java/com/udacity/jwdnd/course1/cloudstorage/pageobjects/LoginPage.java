@@ -1,4 +1,4 @@
-package com.udacity.jwdnd.course1.cloudstorage;
+package com.udacity.jwdnd.course1.cloudstorage.pageobjects;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -17,20 +17,19 @@ public class LoginPage {
     private WebElement loginBtn;
 
     @FindBy(id="signup-success-msg")
-    private WebElement sigupOkMsg;
+    private WebElement signUpSuccess;
 
 
-    public LoginPage(WebDriver webDriver) {PageFactory.initElements(webDriver,this);}
+    public LoginPage(WebDriver driver) {PageFactory.initElements(driver,this);}
 
-    public void Login(String uname, String passw){
+    public void Login(String uname, String pass){
         userName.clear();
         userName.sendKeys(uname);
         passWord.clear();
-        passWord.sendKeys(passw);
+        passWord.sendKeys(pass);
         loginBtn.click();
     }
 
-    public boolean sigupOkMsgDisplayed() { return sigupOkMsg.isDisplayed(); }
 
 
 }

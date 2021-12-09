@@ -15,9 +15,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.Base64;
 
-import static com.udacity.jwdnd.course1.cloudstorage.constant.ConstantMsgs.*;
+
 
 
 @Controller
@@ -38,26 +37,22 @@ public class SignupController {
 
     @PostMapping
     public String signUpNewUser(@ModelAttribute("User") User user, Model model, RedirectAttributes redirectAttributes){
-        logger.error("---Starting signupNewUser---");
-        logger.error("Before Hash, userName="+user.getUserName()+" passwd="+user.getPassWord()+" salt="+user.getSalt());
-        logger.error("FirstName and Last name are"+user.getFirstName()+" "+user.getLastName());
         userService.hashUserPassword(user); //user object will be updated with hashed passwd and salt value
-        logger.error("After Hash, userName="+user.getUserName()+" passwd="+user.getPassWord()+" salt="+user.getSalt());
 
 
         String signup_err = null;
         if(!userService.isUsernameAvailable(user.getUserName()))
-            signup_err=SIGNUP_USER_EXISTING_ERR;
+            signup_err="USER already xists";
 
         if(signup_err==null){
            int rowAdded=  userService.insertUser(user);
            if(rowAdded<0)
-               signup_err =SIGNUP_ERR;
+               signup_err ="Error in signing up";
         }
 
         if(signup_err==null){
             redirectAttributes.addAttribute("isSuccess",true);
-            redirectAttributes.addAttribute("signupMsg",SIGNUP_SUCCESS+user.getUserName());
+            redirectAttributes.addAttribute("signupMsg","Sign up is successful! Welcome:"+user.getUserName());
             return "redirect:/login";
         }
         else{
@@ -65,9 +60,7 @@ public class SignupController {
             model.addAttribute("signupMsg",signup_err);
             }
 
-
-       // logger.error("---Finishing signupNewUser---");
-       return "signup";
+        return "signup";
 
     }
 }

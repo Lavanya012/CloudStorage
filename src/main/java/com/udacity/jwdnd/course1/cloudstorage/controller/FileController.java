@@ -22,7 +22,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.InputStream;
 
-import static com.udacity.jwdnd.course1.cloudstorage.constant.ConstantMsgs.*;
+
 
 @Controller
 public class FileController {
@@ -42,7 +42,7 @@ public class FileController {
 
         logger.info("fileuploadController, upload file ");
         String file_err=null;
-        final String file_ok=FILE_UPLOAD_SUCCESS;
+        final String file_ok="File uploaded Succeesfully";
         byte[] fb=null;
         String fileName=null;
 
@@ -55,7 +55,7 @@ public class FileController {
             //First test if user really selected a file
             logger.error("fileName="+fileName);
             if(fileName.length()==0) {
-                file_err=FILE_NOT_SELECTED_ERR;
+                file_err="Please select a File before uploading";
                 Exception a= new Exception("No file was selected");
                 throw(a);
             }
@@ -66,7 +66,7 @@ public class FileController {
 
             //Second test if the file (by fileName) is already in DB
             if(fileService.isFileDuplicate(userId,fileName)){
-                file_err=FILE_DUPLICATE_ERR;
+                file_err="File Already Exists";
                 Exception a= new Exception("Duplicated file name");
                 throw(a);
             }
@@ -83,10 +83,10 @@ public class FileController {
             logger.error("file size limit exceed expception captured");
             logger.error(a.toString());
             a.printStackTrace();
-            file_err=FILE_SIZE_LIMIT_EXCEED;
+            file_err="File size exceeded";
         }
         catch (Exception a){
-            if(file_err==null) file_err=FILE_UNKNOWN_ERR;
+            if(file_err==null) file_err="Unexpected error";
             logger.error(a.toString());
             a.printStackTrace();
         }
@@ -101,14 +101,14 @@ public class FileController {
     @GetMapping("/home/file/delete/{filename}")
     public String deleteFile(@PathVariable("filename") String fileName,Authentication authentication,RedirectAttributes redirectAttributes){
         String file_err=null;
-        String file_ok=FILE_DELETE_SUCCESS;
+        String file_ok="File Deleted Succesfully";
         logger.info("File delete controller");
         try{
             int rowDeleted= fileService.deleteFile(fileName);
-            if(rowDeleted<0) file_err=FILE_DELETE_FAILURE;
+            if(rowDeleted<0) file_err="Deletion of file is unsuccesful";
 
         }catch(Exception a){
-            if(file_err==null) file_err=FILE_UNKNOWN_ERR;
+            if(file_err==null) file_err="Unexpected error";
            logger.error(a.toString());
         }
 
